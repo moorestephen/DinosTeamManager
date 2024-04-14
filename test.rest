@@ -1,0 +1,26 @@
+POST http://127.0.0.1:8000/login/
+Content-Type: application/json
+
+{
+    "username": "stephen",
+    "password": "password"
+}
+
+###
+
+POST http://127.0.0.1:8000/signup/
+Content-Type: application/json
+
+{
+    "username": "stephen",
+    "password": "password",
+    "email": "stephenkm@icloud.com"
+}
+
+###
+
+GET http://127.0.0.1:8000/test-token/
+Content-Type: application/json
+Authorization: Token 928df7a7ff922c74e494c7f95c48b18b61ff6e7f
+
+{}
