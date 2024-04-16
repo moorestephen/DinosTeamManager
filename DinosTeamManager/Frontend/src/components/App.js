@@ -5,6 +5,7 @@ import { useNavigate, Navigate } from 'react-router-dom';
 
 import LoginPage from './LoginPage';
 import HomePage from './HomePage';
+import AdministratorPage from './AdministratorPage';
 
 export default function App() {
   return (
@@ -12,6 +13,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<LoginPage />} />
         <Route path="/home" element={<HomePage />} />
+        <Route path="/administrator" element={<AdministratorPage />} />
       </Routes>
     </Router>
   );

@@ -21,13 +21,6 @@ export default function HomePage() {
         .catch(error => {
             console.log(error);
         })
-        axios.get("http://localhost:8000/swimmer/", {withCredentials: true})
-        .then(response => {
-            setData(response.data);
-        })
-        .catch(error => {
-            console.log(error);
-        })
     }, []);
 
     const handleLogout = async (e) => {

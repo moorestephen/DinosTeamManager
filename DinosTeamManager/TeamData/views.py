@@ -1,20 +1,17 @@
-from django.shortcuts import render
-from django.http import HttpResponse, JsonResponse
-from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate, logout, login
-from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from rest_framework.parsers import JSONParser
-from rest_framework import permissions
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework import generics
-from django.http import Http404
-from rest_framework.authentication import SessionAuthentication
-from rest_framework.permissions import IsAuthenticated
-from .models import Club, Swimmer, User
-from .serializers import ClubSerializer, SwimmerSerializer, UserSerializer, LoginSerializer
-from django.contrib.auth import SESSION_KEY, BACKEND_SESSION_KEY
+from .models import (User, Club, Swimmer, Group, SwimmerGroup, Coach, GroupCoaches, Admin, 
+                    GroupPractices, Competition, CompetitionCoachDelegations, CompetitionSwimmersAttending, 
+                    EventRecord, Event, Entry)
+from .serializers import (UserSerializer, ClubSerializer, SwimmerSerializer, GroupSerializer, 
+                          SwimmerGroupSerializer, SwimmerAndGroupListSerializer, SwimmerAndGroupListSerializer,
+                          CoachSerializer, GroupCoachesSerializer, CoachAndGroupListSerializer, AdminSerializer,
+                          GroupPracticesSerializer, CompetitionSerializer, CompetitionCoachDelegationsSerializer,
+                          CompetitionSwimmersAttendingSerializer, EventRecordSerializer, EventSerializer,
+                          EntrySerializer)
 
 class LoginView(APIView):
     def post(self, request):
@@ -67,18 +64,142 @@ class ClubListCreate(generics.ListCreateAPIView):
     queryset = Club.objects.all()
     serializer_class = ClubSerializer
 
-class ClubDetail(generics.RetrieveUpdateDestroyAPIView):
+class ClubRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
     queryset = Club.objects.all()
     serializer_class = ClubSerializer
 
 class SwimmerListCreate(generics.ListCreateAPIView):
     queryset = Swimmer.objects.all()
     serializer_class = SwimmerSerializer
-    # authentication_classes = [SessionAuthentication]
-    permission_classes = [IsAuthenticated]
 
-
-
-class SwimmerDetail(generics.RetrieveUpdateDestroyAPIView):
+class SwimmerRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
     queryset = Swimmer.objects.all()
     serializer_class = SwimmerSerializer
+
+class GroupListCreate(generics.ListCreateAPIView):
+    queryset = Group.objects.all()
+    serializer_class = GroupSerializer
+
+class GroupRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Group.objects.all()
+    serializer_class = GroupSerializer
+
+class GroupNameOnlyList(APIView):
+    def get(self, request):
+        queryset = Group.objects.raw(
+            'SELECT name FROM TeamData_group'
+        )
+        serialized = GroupSerializer(queryset, many=True)
+        return Response(serialized.data)
+
+class SwimmerGroupListCreate(generics.ListCreateAPIView):
+    queryset = SwimmerGroup.objects.all()
+    serializer_class = SwimmerGroupSerializer
+
+class SwimmerGroupRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
+    queryset = SwimmerGroup.objects.all()
+    serializer_class = SwimmerGroupSerializer
+
+class SwimmerAndGroupList(APIView):
+    def get(self, request):
+        queryset = Swimmer.objects.raw(
+            'SELECT email, fname, lname, dob, group_id FROM TeamData_swimmer INNER JOIN TeamData_swimmergroup ON TeamData_swimmer.email = TeamData_swimmergroup.swimmer_id'
+        )
+        serialized = SwimmerAndGroupListSerializer(queryset, many=True)
+        return Response(serialized.data)
+
+class CoachListCreate(generics.ListCreateAPIView):
+    queryset = Coach.objects.all()
+    serializer_class = CoachSerializer
+
+class CoachRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Coach.objects.all()
+    serializer_class = CoachSerializer
+
+class GroupCoachesListCreate(generics.ListCreateAPIView):
+    queryset = GroupCoaches.objects.all()
+    serializer_class = GroupCoachesSerializer
+
+class CoachAndGroupList(APIView):
+    def get(self, request):
+        queryset = Coach.objects.raw(
+            'SELECT email, fname, lname, group_id FROM TeamData_coach INNER JOIN TeamData_groupcoaches ON TeamData_coach.email = TeamData_groupcoaches.coach_id'
+        )
+        serialized = CoachAndGroupListSerializer(queryset, many=True)
+        return Response(serialized.data)
+
+class GroupCoachesRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
+    queryset = GroupCoaches.objects.all()
+    serializer_class = GroupCoachesSerializer
+
+class AdminListCreate(generics.ListCreateAPIView):
+    queryset = Admin.objects.all()
+    serializer_class = AdminSerializer
+
+class AdminRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Admin.objects.all()
+    serializer_class = AdminSerializer
+
+class GroupPracticesListCreate(generics.ListCreateAPIView):
+    queryset = GroupPractices.objects.all()
+    serializer_class = GroupPracticesSerializer
+
+class GroupPracticesRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
+    queryset = GroupPractices.objects.all()
+    serializer_class = GroupPracticesSerializer
+
+class CompetitionListCreate(generics.ListCreateAPIView):
+    queryset = Competition.objects.all()
+    serializer_class = CompetitionSerializer
+
+class UpcomingCompetitionListCreate(generics.ListCreateAPIView):
+    def get(self, request):
+        queryset = Competition.objects.raw(
+            "SELECT * FROM TeamData_competition WHERE end_date >= Date('now')"
+        )
+        serialized = CompetitionSerializer(queryset, many = True)
+        return Response(serialized.data)
+
+class CompetitionRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Competition.objects.all()
+    serializer_class = CompetitionSerializer
+
+class CompetitionCoachDelegationsListCreate(generics.ListCreateAPIView):
+    queryset = CompetitionCoachDelegations.objects.all()
+    serializer_class = CompetitionCoachDelegationsSerializer
+
+class CompetitionCoachDelegationsRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
+    queryset = CompetitionCoachDelegations.objects.all()
+    serializer_class = CompetitionCoachDelegationsSerializer
+
+class CompetitionSwimmersAttendingListCreate(generics.ListCreateAPIView):
+    queryset = CompetitionSwimmersAttending.objects.all()
+    serializer_class = CompetitionSwimmersAttendingSerializer
+
+class CompetitionSwimmersAttendingRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
+    queryset = CompetitionSwimmersAttending.objects.all()
+    serializer_class = CompetitionSwimmersAttendingSerializer
+
+class EventRecordListCreate(generics.ListCreateAPIView):
+    queryset = EventRecord.objects.all()
+    serializer_class = EventRecordSerializer
+
+class EventRecordRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
+    queryset = EventRecord.objects.all()
+    serializer_class = EventRecordSerializer
+
+class EventListCreate(generics.ListCreateAPIView):
+    queryset = Event.objects.all()
+    serializer_class = EventSerializer
+
+class EventRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Event.objects.all()
+    serializer_class = EventSerializer
+
+class EntryListCreate(generics.ListCreateAPIView):
+    queryset = Entry.objects.all()
+    serializer_class = EntrySerializer
+
+class EntryRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Entry.objects.all()
+    serializer_class = EntrySerializer

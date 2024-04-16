@@ -4,16 +4,20 @@ from TeamData import views
 from django.urls import include
 
 urlpatterns = [
-    path('club/', views.ClubListCreate.as_view()),
-    path('club/<int:pk>/', views.ClubDetail.as_view()),
-    path('swimmer/', views.SwimmerListCreate.as_view()),
-    path('swimmer/<int:pk>/', views.SwimmerDetail.as_view()),
-    path('user/', views.UserListCreate.as_view()),
-    path('user/<int:pk>/', views.UserDetail.as_view()),
+    # Authorization and authentication
+    path('signup/', views.UserListCreate.as_view(), name='signup'),
     path('login/', views.LoginView.as_view(), name='login'),
     path('logout/', views.LogoutView.as_view(), name='logout'),
-    path('signup/', views.UserListCreate.as_view(), name='signup'),
     path('check-login-status/', views.CheckLoginStatus.as_view(), name='check-login-status'),
+
+    # Other
+    path('groups/', views.GroupListCreate.as_view(), name='groups'),
+    path('group-names/', views.GroupNameOnlyList.as_view(), name='group-names'),
+    path('create-user/', views.UserListCreate.as_view(), name='create-user'),
+    path('swimmers/', views.SwimmerListCreate.as_view(), name='swimmers'),
+    path('swimmers-group/', views.SwimmerGroupListCreate.as_view(), name='swimmers-group'),
+    path('swimmers-and-group/', views.SwimmerAndGroupList.as_view(), name='swimmers-and-group'),
+    path('coaches/', views.CoachListCreate.as_view(), name='coaches'),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)
