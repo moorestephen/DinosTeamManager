@@ -19,6 +19,8 @@ function AddEventRecordPopup(props) {
     const [competitionData, setCompetitionData ] = useState([]);
     const [swimmer, setSwimmer ] = useState([]);
 
+    const [currentTime, setCurrentTime] = useState(new Date().toISOString().substr(11, 8));
+
 
     useEffect(() => {
         axios.get('http://localhost:8000/competitions/')
@@ -42,7 +44,7 @@ function AddEventRecordPopup(props) {
 
     const handleClose = () => {
         axios.post('http://localhost:8000/event_record/', {
-            entry_time: document.getElementById('entry_time').value,
+            entry_time: currentTime,
             final_time_seconds: document.getElementById('final_time_seconds').value,
             distance: document.getElementById('distance').value,
             stroke: document.getElementById('stroke').value,
