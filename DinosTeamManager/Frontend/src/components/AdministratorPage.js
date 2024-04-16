@@ -223,6 +223,20 @@ export default function AdministratorPage(props) {
             console.log(error);
         })
 
+        // Direct to appropriate page if they are logged in but on the wrong page
+        axios.get("http://localhost:8000/user-info/", {withCredentials: true})
+        .then(response => {
+            if (response.data['role'] === 'Swimmer') {
+                navigate('/swimmer');
+            } else if (response.data['role'] === 'Coach') {
+                navigate('/coach');
+            } else if (response.data['role'] === 'Administrator') {
+                navigate('/administrator');
+            } else {
+                navigate('/'); // Navigate to login page if user role is not recognized
+            }
+        })
+
         // Pull user info for display and reference
         axios.get('http://localhost:8000/user-info/', {withCredentials : true})
         .then(response => {

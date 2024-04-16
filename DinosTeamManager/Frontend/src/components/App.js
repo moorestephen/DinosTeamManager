@@ -16,6 +16,7 @@ export default function App() {
         <Route path="/home" element={<HomePage />} />
         <Route path="/administrator" element={<AdministratorPage />} />
         <Route path="/coach" element={<CoachPage />} />
+        <Route path="/swimmer" />
       </Routes>
     </Router>
   );

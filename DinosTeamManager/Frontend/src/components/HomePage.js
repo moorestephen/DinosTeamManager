@@ -21,6 +21,20 @@ export default function HomePage() {
         .catch(error => {
             console.log(error);
         })
+
+        // Direct to appropriate page depending on user role
+        axios.get("http://localhost:8000/user-info/", {withCredentials: true})
+        .then(response => {
+            if (response.data['role'] === 'Swimmer') {
+                navigate('/swimmer');
+            } else if (response.data['role'] === 'Coach') {
+                navigate('/coach');
+            } else if (response.data['role'] === 'Administrator') {
+                navigate('/administrator');
+            } else {
+                navigate('/'); // Navigate to login page if user role is not recognized
+            }
+        })
     }, []);
 
     const handleLogout = async (e) => {
