@@ -3,6 +3,8 @@ import axios from 'axios';
 import PropTypes from 'prop-types';
 import { Autocomplete } from '@mui/material';
 
+import { useNavigate } from 'react-router-dom';
+
 import DisplayAppBar from "./DisplayAppBar.js";
 import UserInformation from "./UserInformation.js";
 
@@ -293,7 +295,21 @@ export default function CoachPage(props) {
         setRemoveCompetitionPopupOpen(false);
     };
 
+    const navigate = useNavigate();
+
     useEffect(() => {
+        // Navigate back to login page if user not logged in
+        axios.get("http://localhost:8000/check-login-status/", {withCredentials: true})
+        .then(response => {
+            if (!response.data['is_authenticated']) {
+                navigate('/'); // Navigate to login page if not logged in
+            }
+        })
+        .catch(error => {
+            console.log(error);
+        })
+
+        // Pull user info for display and reference 
         axios.get('http://localhost:8000/user-info/', {withCredentials : true})
         .then(response => {
             setUserData(response.data);

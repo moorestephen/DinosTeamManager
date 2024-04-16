@@ -212,6 +212,18 @@ export default function AdministratorPage(props) {
     };
 
     useEffect(() => {
+        // Navigate back to login page if user not logged in
+        axios.get("http://localhost:8000/check-login-status/", {withCredentials: true})
+        .then(response => {
+            if (!response.data['is_authenticated']) {
+                navigate('/'); // Navigate to login page if not logged in
+            }
+        })
+        .catch(error => {
+            console.log(error);
+        })
+
+        // Pull user info for display and reference
         axios.get('http://localhost:8000/user-info/', {withCredentials : true})
         .then(response => {
             setUserData(response.data);
