@@ -18,6 +18,10 @@ urlpatterns = [
     path('swimmers-group/', views.SwimmerGroupListCreate.as_view(), name='swimmers-group'),
     path('swimmers-and-group/', views.SwimmerAndGroupList.as_view(), name='swimmers-and-group'),
     path('coaches/', views.CoachListCreate.as_view(), name='coaches'),
+
+    path('event_record/', views.EventRecordListCreate.as_view()),
+    path('competitions/', views.CompetitionListCreate.as_view()),   
+    path('competitions/<str:name>/', views.CompetitionRetrieveUpdateDestroy.as_view()),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)
