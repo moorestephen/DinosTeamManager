@@ -7,6 +7,7 @@ import LoginPage from './LoginPage';
 import HomePage from './HomePage';
 import AdministratorPage from './AdministratorPage';
 import CoachPage from './CoachPage';
+import SwimmerPage from './SwimmerPage';
 
 export default function App() {
   return (
@@ -16,7 +17,7 @@ export default function App() {
         <Route path="/home" element={<HomePage />} />
         <Route path="/administrator" element={<AdministratorPage />} />
         <Route path="/coach" element={<CoachPage />} />
-        <Route path="/swimmer" />
+        <Route path="/swimmer" element={<SwimmerPage/>} />
       </Routes>
     </Router>
   );

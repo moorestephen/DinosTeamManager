@@ -125,145 +125,8 @@ AddEventRecordPopup.propTypes = {
     open: PropTypes.bool.isRequired,
 };
 
-function AddCompetitionPopup(props) {
-    const {open, onClose, setCompetitionData, setCompetitionNames} = props;
-
-    const handleClose = () => {
-        axios.post('http://localhost:8000/competitions/', {
-            name: document.getElementById('name').value,
-            sanctioned: document.getElementById('sanctioned').checked,
-            start_date: document.getElementById('start_date').value,
-            end_date: document.getElementById('end_date').value,
-        })
-        .then(response => {
-            axios.get('http://localhost:8000/competitions/')  
-                .then(response => {
-                    setCompetitionNames(response.data.map(competition => competition.name));
-                    setCompetitionData(response.data);
-                })
-                .catch((error) => {
-                    console.log(error);
-                });
-        })
-        .catch((error) => {
-            console.log(error);
-        });            
-        onClose();
-    };
-
-    return (
-        <Dialog onClose={handleClose} open={open}>
-            <DialogTitle>Add Competition</DialogTitle>
-            <DialogContent >
-                <Grid container spacing={2}>
-                <Grid item>
-                        <TextField required id="name" label="Name" variant="outlined" InputLabelProps={{shrink: true}}/>
-                    </Grid>
-                    <Grid item>
-                        <FormControlLabel
-                            control = {<Checkbox required id = 'sanctioned' />}
-                            label = "Sanctioned"
-                        />
-                    </Grid>
-                    <Grid item xs = {6}>
-                        <TextField required id="start_date" type='date' label="Start Date" variant="outlined" InputLabelProps={{shrink: true}}/>
-                    </Grid>
-                    <Grid item xs = {6}>
-                        <TextField required id="end_date" type='date' label="End Date" variant="outlined" InputLabelProps={{shrink: true}}/>
-                    </Grid>               
-                </Grid>
-            </DialogContent>
-            <DialogActions>
-                <Button variant="outlined" onClick={handleClose} >
-                    Add Competition
-                </Button>
-            </DialogActions>
-        </Dialog>
-    )
-}
-
-AddCompetitionPopup.propTypes = {
-    onClose: PropTypes.func.isRequired,
-    open: PropTypes.bool.isRequired,
-}
-
-function RemoveCompetitionPopup(props) {
-    const { open, onClose, setCompetitionData, setCompetitionNames, competitionNames} = props;
-    const [competition, setCompetition] = useState('');
-    //const [competitionNames, setCompetitionNames] = useState([]);
-
-    useEffect(() => {
-        axios.get('http://localhost:8000/competitions/')
-        .then(response => {
-            const names = response.data.map(competition => competition.name);
-            setCompetitionNames(names);
-        })
-        .catch((error) => {
-            console.log(error);
-        });
-    }, []);
-
-    const handleClose = () => {
-        axios.delete(`http://localhost:8000/competitions/${competition}`)
-            .then(response => {
-                // Update competition names after deletion
-                setCompetitionNames(prevNames => prevNames.filter(name => name !== competition));
-                axios.get('http://localhost:8000/competitions/')
-                    .then(response => {
-                        setCompetitionData(response.data);
-                    })
-                    .catch((error) => {
-                        console.log(error);
-                    });
-            })
-            .catch((error) => {
-                console.log(error);
-            });
-        onClose();
-    };
-
-    const handleInputChange = (newValue) => {
-        setCompetition(newValue);
-    };
-
-    return (
-        <Dialog onClose={onClose} open={open}>
-            <DialogTitle>Remove Competition</DialogTitle>
-            <DialogContent >
-                <Grid container spacing={2}>
-                    <Grid item>
-                        <Autocomplete
-                            required
-                            id="competition-select"
-                            options={competitionNames}
-                            value={competition}
-                            onChange={(event, newValue) => handleInputChange(newValue)}
-                            style={{ width: 300 }}
-                            renderInput={(params) => <TextField {...params} label="Competitions" variant="outlined" />}
-                        />
-                    </Grid>
-                </Grid>
-            </DialogContent>
-            <DialogActions>
-                <Button variant="outlined" onClick={handleClose}>
-                    Remove Competition
-                </Button>
-            </DialogActions>
-        </Dialog>
-    )
-}
-
-RemoveCompetitionPopup.propTypes = {
-    onClose: PropTypes.func.isRequired,
-    open: PropTypes.bool.isRequired,
-    setCompetitionData: PropTypes.func.isRequired,
-}
-
 export default function CoachPage(props) {
     const [userData, setUserData] = useState([{}]);
-
-    const [AddCompetitionPopupOpen, setAddCompetitionPopupOpen] = useState(false);
-    const [RemoveCompetitionPopupOpen, setRemoveCompetitionPopupOpen] = useState(false);
 
     const [AddEventRecordPopupOpen, setAddEventPopupOpen] = useState(false);
 
@@ -277,22 +140,6 @@ export default function CoachPage(props) {
 
     const handleAddEventClickClose = () => {
         setAddEventPopupOpen(false);
-    };
-
-    const handleAddCompetitionClickOpen = () => {
-        setAddCompetitionPopupOpen(true);
-    };
-
-    const handleAddCompetitionClickClose = () => {
-        setAddCompetitionPopupOpen(false);
-    };
-
-    const handleRemoveCompetitionClickOpen = () => {
-        setRemoveCompetitionPopupOpen(true);
-    };
-
-    const handleRemoveCompetitionClickClose = () => {
-        setRemoveCompetitionPopupOpen(false);
     };
 
     const navigate = useNavigate();
@@ -405,21 +252,6 @@ export default function CoachPage(props) {
                                 ))}
                             </TableBody>
                         </Table>
-                        <Box display="flex" justifyContent="flex-end">
-                            <Button variant="outlined" onClick={handleAddCompetitionClickOpen}>Add Competition</Button>
-                            <Button variant="outlined" onClick={handleRemoveCompetitionClickOpen}>Remove Competition</Button>
-                        </Box>
-                        <AddCompetitionPopup 
-                            open={AddCompetitionPopupOpen} 
-                            onClose={handleAddCompetitionClickClose} 
-                            setCompetitionData={setCompetitionData} 
-                            setCompetitionNames = {setCompetitionNames}/>
-                        <RemoveCompetitionPopup 
-                            open={RemoveCompetitionPopupOpen} 
-                            onClose={handleRemoveCompetitionClickClose} 
-                            setCompetitionData={setCompetitionData} 
-                            setCompetitionNames = {setCompetitionNames}
-                            competitionNames = {competitionNames}/>
                     </Paper>
                 </Grid>
             </Grid>
