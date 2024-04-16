@@ -92,7 +92,7 @@ function AddEventRecordPopup(props) {
                         <Autocomplete
                             required
                             id="course"
-                            options={['Relay']}
+                            options={['Short Course', 'Long Course']}
                             style={{ width: 300 }}
                             renderInput={(params) => <TextField {...params} label="Course" variant="outlined" />}
                         />
