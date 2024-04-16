@@ -10,11 +10,12 @@ import UserInformation from "./UserInformation.js";
 
 import { Paper, Grid, Typography, Table, TableBody, TableCell, TableHead, TableRow,
          Button, Box, Dialog, DialogContent, TextField, DialogTitle, DialogActions,
-         FormControlLabel, Checkbox} from '@mui/material';
+         FormControlLabel, Checkbox, DialogContentText} from '@mui/material';
 
 
 function AddEventRecordPopup(props) {
     const {open, onClose, setEventRecordData} = props;
+
     const [competitionData, setCompetitionData ] = useState([]);
     const [swimmer, setSwimmer ] = useState([]);
 
@@ -38,7 +39,7 @@ function AddEventRecordPopup(props) {
         },
 
         []);
- 
+
     const handleClose = () => {
         axios.post('http://localhost:8000/event_record/', {
             entry_time: document.getElementById('entry_time').value,
@@ -66,12 +67,9 @@ function AddEventRecordPopup(props) {
 
     return (
         <Dialog onClose={handleClose} open={open}>
-            <DialogTitle>Add Event Record</DialogTitle>
-            <DialogContent >
+            <DialogContent>
+                <DialogContentText variant="h6" style={{ marginBottom: '20px' }}>Add Competition</DialogContentText>
                 <Grid container spacing={2}>
-                <Grid item>
-                        <TextField required id="swimmer_name" label="Swimmer Name" variant="outlined" InputLabelProps={{shrink: true}}/>
-                    </Grid>
                     <Grid item>
                         <TextField required id="entry_time" type='time' label="Entry Time" variant="outlined" InputLabelProps={{shrink: true}}/>
                     </Grid>
@@ -106,8 +104,7 @@ function AddEventRecordPopup(props) {
                             style={{ width: 300 }}
                             renderInput={(params) => <TextField {...params} label="Competitions" variant="outlined" />}
                         />
-                    </Grid>
-                   
+                    </Grid>  
                 </Grid>
             </DialogContent>
             <DialogActions>
@@ -116,8 +113,7 @@ function AddEventRecordPopup(props) {
                 </Button>
             </DialogActions>
         </Dialog>
-    
-    )
+    );
 }
 
 AddEventRecordPopup.propTypes = {
@@ -202,21 +198,19 @@ export default function CoachPage(props) {
                         <Table size="small">
                             <TableHead>
                                 <TableRow>
-                                
-                                <TableCell>Swimmer Email</TableCell>
+                                    <TableCell>Swimmer Email</TableCell>
                                     <TableCell>Time</TableCell>
                                     <TableCell>Distance</TableCell>
                                     <TableCell>Stroke</TableCell>
                                     <TableCell>Course</TableCell>
-                                    <TableCell>Competition</TableCell>
-                                    
+                                    <TableCell>Competition</TableCell>  
                                 </TableRow>
                             </TableHead>
                             <TableBody>
                             {eventRecordData.map((event_record) => (
                                     <TableRow key={event_record.id}>
-                                       
                                         <TableCell>{event_record.swimmer}</TableCell>
+                                        <TableCell>{event_record.final_time_seconds}</TableCell>
                                         <TableCell>{event_record.distance}</TableCell>
                                         <TableCell>{event_record.stroke}</TableCell>
                                         <TableCell>{event_record.course}</TableCell>

@@ -22,6 +22,7 @@ urlpatterns = [
     path('coach-and-group/', views.CoachAndGroupList.as_view(), name='coach-and-group'),
 
     path('event_record/', views.EventRecordListCreate.as_view()),
+    
     path('competitions/', views.CompetitionListCreate.as_view()),   
     path('competitions/<str:name>/', views.CompetitionRetrieveUpdateDestroy.as_view()),
 ]
