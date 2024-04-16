@@ -6,6 +6,7 @@ import { useNavigate, Navigate } from 'react-router-dom';
 import LoginPage from './LoginPage';
 import HomePage from './HomePage';
 import AdministratorPage from './AdministratorPage';
+import CoachPage from './CoachPage';
 
 export default function App() {
   return (
@@ -14,6 +15,7 @@ export default function App() {
         <Route path="/" element={<LoginPage />} />
         <Route path="/home" element={<HomePage />} />
         <Route path="/administrator" element={<AdministratorPage />} />
+        <Route path="/coach" element={<CoachPage />} />
       </Routes>
     </Router>
   );

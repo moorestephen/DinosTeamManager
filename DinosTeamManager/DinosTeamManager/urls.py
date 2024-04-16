@@ -28,4 +28,6 @@ urlpatterns = [
     # path('test/', TestDataOutput.as_view(), name='test_output'),
     # path('users/', include('django.contrib.auth.urls'))
     path('', include('TeamData.urls'))
+
+    
 ]

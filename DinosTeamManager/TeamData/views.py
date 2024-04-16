@@ -183,6 +183,15 @@ class CompetitionRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
     queryset = Competition.objects.all()
     serializer_class = CompetitionSerializer
 
+    def delete(self, request, *args, **kwargs):
+        name = kwargs.get('name')
+        competition = self.queryset.filter(name = name).first()
+        if competition:
+            competition.delete()
+            return Response({'message': 'Competition deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+        else:
+            return Response({'error': 'Competition not found'}, status=status.HTTP_404_NOT_FOUND)
+
 class CompetitionCoachDelegationsListCreate(generics.ListCreateAPIView):
     queryset = CompetitionCoachDelegations.objects.all()
     serializer_class = CompetitionCoachDelegationsSerializer
