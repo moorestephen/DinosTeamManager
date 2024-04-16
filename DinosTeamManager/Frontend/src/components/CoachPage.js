@@ -258,6 +258,8 @@ RemoveCompetitionPopup.propTypes = {
 }
 
 export default function CoachPage(props) {
+    const [userData, setUserData] = useState([{}]);
+
     const [AddCompetitionPopupOpen, setAddCompetitionPopupOpen] = useState(false);
     const [RemoveCompetitionPopupOpen, setRemoveCompetitionPopupOpen] = useState(false);
 
@@ -292,6 +294,15 @@ export default function CoachPage(props) {
     };
 
     useEffect(() => {
+        axios.get('http://localhost:8000/user-info/', {withCredentials : true})
+        .then(response => {
+            setUserData(response.data);
+            console.log(response)
+        })
+        .catch((error) => {
+            console.log(error);
+        });
+
         axios.get(`http://localhost:8000/event_record`)
             .then(response => {
                 setEventRecordData(response.data);
@@ -319,7 +330,7 @@ export default function CoachPage(props) {
                 </Grid>
                 <Grid item xs={12}>
                     <Paper variant="outlined">
-                        <UserInformation name={props.coachName} role="Coach" />
+                        <UserInformation email={userData.email} role={userData.role} />
                     </Paper>
                 </Grid>
                 <Grid item xs={6}>
