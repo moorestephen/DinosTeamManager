@@ -14,11 +14,10 @@ import { Paper, Grid, Typography, Table, TableBody, TableCell, TableHead, TableR
 
 
 function AddEventRecordPopup(props) {
-    const {open, onClose, setEventRecordData} = props;
-
-    const [competitionData, setCompetitionData ] = useState([]);
-    const [swimmer, setSwimmer ] = useState([]);
-
+    const { open, onClose, setEventRecordData } = props;
+    const [competitionData, setCompetitionData] = useState([]);
+    const [swimmer, setSwimmer] = useState([]);
+    const [currentTime, setCurrentTime] = useState(new Date().toISOString().substr(11, 8));
 
     useEffect(() => {
         axios.get('http://localhost:8000/competitions/')
@@ -28,7 +27,7 @@ function AddEventRecordPopup(props) {
             .catch((error) => {
                 console.log(error);
             });
-        
+
         axios.get('http://localhost:8000/swimmers/')
             .then(response => {
                 setSwimmer(response.data);
@@ -36,13 +35,11 @@ function AddEventRecordPopup(props) {
             .catch((error) => {
                 console.log(error);
             });
-        },
+    }, []);
 
-        []);
- 
     const handleClose = () => {
         axios.post('http://localhost:8000/event_record/', {
-            entry_time: document.getElementById('entry_time').value,
+            entry_time: currentTime,
             final_time_seconds: document.getElementById('final_time_seconds').value,
             distance: document.getElementById('distance').value,
             stroke: document.getElementById('stroke').value,
@@ -50,18 +47,18 @@ function AddEventRecordPopup(props) {
             competition: document.getElementById('competition-select').value,
             swimmer: document.getElementById('swimmer-select').value,
         })
-        .then(response => {
-            axios.get('http://localhost:8000/event_record/')  
-                .then(response => {
-                    setEventRecordData(response.data);
-                })
-                .catch((error) => {
-                    console.log(error);
-                });
+            .then(response => {
+                axios.get('http://localhost:8000/event_record/')
+                    .then(response => {
+                        setEventRecordData(response.data);
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                    });
             })
             .catch((error) => {
                 console.log(error);
-            });            
+            });
         onClose();
     };
 
@@ -71,19 +68,34 @@ function AddEventRecordPopup(props) {
                 <DialogContentText variant="h6" style={{ marginBottom: '20px' }}>Add Competition</DialogContentText>
                 <Grid container spacing={2}>
                     <Grid item>
-                        <TextField required id="entry_time" type='time' label="Entry Time" variant="outlined" InputLabelProps={{shrink: true}}/>
+                        <TextField required id="final_time_seconds" type='number' label="Final Time (Seconds)" variant="outlined" InputLabelProps={{ shrink: true }} />
                     </Grid>
                     <Grid item>
-                        <TextField required id="final_time_seconds" type='number' label="Final Time (Seconds)" variant="outlined" InputLabelProps={{shrink: true}}/>
+                        <Autocomplete
+                            required
+                            id="distance"
+                            options={['25', '50', '100', '200', '400', '800', '1500']}
+                            style={{ width: 300 }}
+                            renderInput={(params) => <TextField {...params} label="Distance (m)" variant="outlined" />}
+                        />
                     </Grid>
                     <Grid item>
-                        <TextField required id="distance" type='number' label="Distance" variant="outlined" InputLabelProps={{shrink: true}}/>
+                        <Autocomplete
+                            required
+                            id="stroke"
+                            options={['Freestyle', 'Backstroke', 'Breaststroke', 'Butterfly']}
+                            style={{ width: 300 }}
+                            renderInput={(params) => <TextField {...params} label="Stroke" variant="outlined" />}
+                        />
                     </Grid>
                     <Grid item>
-                        <TextField required id="stroke" label="Stroke" variant="outlined" InputLabelProps={{shrink: true}}/>
-                    </Grid>
-                    <Grid item>
-                        <TextField required id="course" label="Course" variant="outlined" InputLabelProps={{shrink: true}}/>
+                        <Autocomplete
+                            required
+                            id="course"
+                            options={['Relay']}
+                            style={{ width: 300 }}
+                            renderInput={(params) => <TextField {...params} label="Course" variant="outlined" />}
+                        />
                     </Grid>
                     <Grid item>
                         <Autocomplete
@@ -92,7 +104,7 @@ function AddEventRecordPopup(props) {
                             options={swimmer}
                             getOptionLabel={(option) => option.email}
                             style={{ width: 300 }}
-                            renderInput={(params) => <TextField {...params} label="Swimmers" variant="outlined" />}
+                            renderInput={(params) => <TextField {...params} label="Swimmer" variant="outlined" />}
                         />
                     </Grid>
                     <Grid item>
@@ -102,9 +114,9 @@ function AddEventRecordPopup(props) {
                             options={competitionData}
                             getOptionLabel={(option) => option.name}
                             style={{ width: 300 }}
-                            renderInput={(params) => <TextField {...params} label="Competitions" variant="outlined" />}
+                            renderInput={(params) => <TextField {...params} label="Competition" variant="outlined" />}
                         />
-                    </Grid>  
+                    </Grid>
                 </Grid>
             </DialogContent>
             <DialogActions>

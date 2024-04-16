@@ -71,19 +71,34 @@ function AddEventRecordPopup(props) {
                 <DialogContentText variant="h6" style={{ marginBottom: '20px' }}>Add Competition</DialogContentText>
                 <Grid container spacing={2}>
                     <Grid item>
-                        <TextField required id="entry_time" type='time' label="Entry Time" variant="outlined" InputLabelProps={{shrink: true}}/>
+                        <TextField required id="final_time_seconds" type='number' label="Final Time (Seconds)" variant="outlined" InputLabelProps={{ shrink: true }} />
                     </Grid>
                     <Grid item>
-                        <TextField required id="final_time_seconds" type='number' label="Final Time (Seconds)" variant="outlined" InputLabelProps={{shrink: true}}/>
+                        <Autocomplete
+                            required
+                            id="distance"
+                            options={['25', '50', '100', '200', '400', '800', '1500']}
+                            style={{ width: 300 }}
+                            renderInput={(params) => <TextField {...params} label="Distance (m)" variant="outlined" />}
+                        />
                     </Grid>
                     <Grid item>
-                        <TextField required id="distance" type='number' label="Distance" variant="outlined" InputLabelProps={{shrink: true}}/>
+                        <Autocomplete
+                            required
+                            id="stroke"
+                            options={['Freestyle', 'Backstroke', 'Breaststroke', 'Butterfly']}
+                            style={{ width: 300 }}
+                            renderInput={(params) => <TextField {...params} label="Stroke" variant="outlined" />}
+                        />
                     </Grid>
                     <Grid item>
-                        <TextField required id="stroke" label="Stroke" variant="outlined" InputLabelProps={{shrink: true}}/>
-                    </Grid>
-                    <Grid item>
-                        <TextField required id="course" label="Course" variant="outlined" InputLabelProps={{shrink: true}}/>
+                        <Autocomplete
+                            required
+                            id="course"
+                            options={['Relay']}
+                            style={{ width: 300 }}
+                            renderInput={(params) => <TextField {...params} label="Course" variant="outlined" />}
+                        />
                     </Grid>
                     <Grid item>
                         <Autocomplete
@@ -92,7 +107,7 @@ function AddEventRecordPopup(props) {
                             options={swimmer}
                             getOptionLabel={(option) => option.email}
                             style={{ width: 300 }}
-                            renderInput={(params) => <TextField {...params} label="Swimmers" variant="outlined" />}
+                            renderInput={(params) => <TextField {...params} label="Swimmer" variant="outlined" />}
                         />
                     </Grid>
                     <Grid item>
@@ -102,9 +117,9 @@ function AddEventRecordPopup(props) {
                             options={competitionData}
                             getOptionLabel={(option) => option.name}
                             style={{ width: 300 }}
-                            renderInput={(params) => <TextField {...params} label="Competitions" variant="outlined" />}
+                            renderInput={(params) => <TextField {...params} label="Competition" variant="outlined" />}
                         />
-                    </Grid>  
+                    </Grid>
                 </Grid>
             </DialogContent>
             <DialogActions>
