@@ -26,6 +26,10 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta(object):
         model = User
         fields = ['id', 'email', 'username', 'password']
+
+class UserInfoSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    role = "Swimmer"
     
 class ClubSerializer(serializers.ModelSerializer):
     class Meta:

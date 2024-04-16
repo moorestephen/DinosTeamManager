@@ -9,6 +9,7 @@ urlpatterns = [
     path('login/', views.LoginView.as_view(), name='login'),
     path('logout/', views.LogoutView.as_view(), name='logout'),
     path('check-login-status/', views.CheckLoginStatus.as_view(), name='check-login-status'),
+    path('user-info/', views.UserInfo.as_view(), name='get-user-info'),
 
     # Other
     path('groups/', views.GroupListCreate.as_view(), name='groups'),
@@ -18,6 +19,7 @@ urlpatterns = [
     path('swimmers-group/', views.SwimmerGroupListCreate.as_view(), name='swimmers-group'),
     path('swimmers-and-group/', views.SwimmerAndGroupList.as_view(), name='swimmers-and-group'),
     path('coaches/', views.CoachListCreate.as_view(), name='coaches'),
+    path('coach-and-group/', views.CoachAndGroupList.as_view(), name='coach-and-group'),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

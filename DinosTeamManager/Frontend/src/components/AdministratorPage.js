@@ -1,14 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from 'axios';
-// import Paper from '@material-ui/core/Paper';
-// import Grid from "@material-ui/core/Grid";
-// import Typography from "@material-ui/core/Typography";
-// import Table from "@material-ui/core/Table";
 import PropTypes from 'prop-types';
-// import { TableBody, TableCell, TableHead, TableRow, Button, Box,
-//          Dialog, DialogContent, TextField,
-//          DialogTitle, DialogActions } from "@material-ui/core";
 import { Autocomplete } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
 import DisplayAppBar from "./DisplayAppBar.js";
 import UserInformation from "./UserInformation.js";
@@ -191,11 +185,15 @@ function AddCoachPopup(props) {
 
 
 export default function AdministratorPage(props) {
+    const [userData, setUserData] = useState([]);
+
     const [swimmerData, setSwimmerData] = useState([]);
     const [coachData, setCoachData] = useState([]);
     const [groupCoachData, setGroupCoachData] = useState([]);
     const [addSwimmerPopupOpen, setAddSwimmerPopupOpen] = useState(false);
     const [addCoachPopupOpen, setAddCoachPopupOpen] = useState(false);
+
+    const navigate = useNavigate();
 
     const handleAddSwimmerClickOpen = () => {
         setAddSwimmerPopupOpen(true);
@@ -213,31 +211,39 @@ export default function AdministratorPage(props) {
         setAddCoachPopupOpen(false);
     };
 
-    /**
-    * Hook that fetches swimmer data from the database - currently no dependencies
-    */
     useEffect(() => {
+        axios.get('http://localhost:8000/user-info/', {withCredentials : true})
+        .then(response => {
+            setUserData(response.data);
+            console.log(response)
+        })
+        .catch((error) => {
+            console.log(error);
+        });
+
         axios.get('http://localhost:8000/swimmers-and-group/')
-            .then(response => {
-                setSwimmerData(response.data);
-            })
-            .catch((error) => {
-                console.log(error);
-            });
+        .then(response => {
+            setSwimmerData(response.data);
+        })
+        .catch((error) => {
+            console.log(error);
+        });
+
         axios.get('http://localhost:8000/coaches/')
-            .then(response => {
-                setCoachData(response.data);
-            })
-            .catch((error) => {
-                console.log(error);
-            });
-        axios.get('http://localhost:8000/coaches-and-group/')
-            .then(response => {
-                setGroupCoachData(response.data);
-            })
-            .catch((error) => {
-                console.log(error);
-            });
+        .then(response => {
+            setCoachData(response.data);
+        })
+        .catch((error) => {
+            console.log(error);
+        });
+
+        axios.get('http://localhost:8000/coach-and-group/')
+        .then(response => {
+            setGroupCoachData(response.data);
+        })
+        .catch((error) => {
+            console.log(error);
+        });
         }, []);
         
 
@@ -249,7 +255,7 @@ export default function AdministratorPage(props) {
                 </Grid>
                 <Grid item xs={12}>
                     <Paper variant="outlined">
-                        <UserInformation name="Admin" role="Administrator" />
+                        <UserInformation email={userData.email} role={userData.role}/>
                     </Paper>
                 </Grid>
                 <Grid item xs={4}>

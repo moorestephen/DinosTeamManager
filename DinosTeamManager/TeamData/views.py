@@ -11,7 +11,7 @@ from .serializers import (UserSerializer, ClubSerializer, SwimmerSerializer, Gro
                           CoachSerializer, GroupCoachesSerializer, CoachAndGroupListSerializer, AdminSerializer,
                           GroupPracticesSerializer, CompetitionSerializer, CompetitionCoachDelegationsSerializer,
                           CompetitionSwimmersAttendingSerializer, EventRecordSerializer, EventSerializer,
-                          EntrySerializer)
+                          EntrySerializer, UserInfoSerializer)
 
 class LoginView(APIView):
     def post(self, request):
@@ -37,7 +37,6 @@ class LogoutView(APIView):
 class CheckLoginStatus(APIView):
     def get(self, request):
         if request.user.is_authenticated:
-            print(request.user.username)
             return Response({'is_authenticated': True}, headers={'Access-Control-Allow-Credentials': 'true'})
         else:
             return Response({'is_authenticated': False}, headers={'Access-Control-Allow-Credentials': 'true'})
@@ -59,6 +58,26 @@ class UserListCreate(generics.ListCreateAPIView):
 class UserDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+
+class UserInfo(APIView):
+    def get(self, request):
+        if request.user.is_authenticated:
+            user = User.objects.get(username=request.user.username)
+            data = {}
+            if Swimmer.objects.filter(email=request.user.email).exists():
+                data['email'] = user.email
+                data['role'] = 'Swimmer'
+            elif Coach.objects.filter(email=request.user.email).exists():
+                data['email'] = user.email
+                data['role'] = 'Coach'
+            elif Admin.objects.filter(email=request.user.email).exists():
+                data['email'] = user.email
+                data['role'] = 'Admin'
+            else:
+                return Response({'error': 'User not linked to any role'}, headers={'Access-Control-Allow-Credentials': 'true'})
+            return Response(data, headers={'Access-Control-Allow-Credentials': 'true'})
+        else:
+            return Response({'error': 'User not authenticated'}, headers={'Access-Control-Allow-Credentials': 'true'})
 
 class ClubListCreate(generics.ListCreateAPIView):
     queryset = Club.objects.all()
