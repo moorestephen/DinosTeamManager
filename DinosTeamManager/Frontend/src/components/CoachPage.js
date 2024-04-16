@@ -121,6 +121,58 @@ AddEventRecordPopup.propTypes = {
     open: PropTypes.bool.isRequired,
 };
 
+function RemoveEventRecordPopup(props) {
+    const { open, onClose, setEventRecordData, eventRecordIds } = props;
+    const [selectedEventRecordId, setSelectedEventRecordId] = useState('');
+
+    const handleClose = () => {
+        axios.delete(`http://localhost:8000/event_record/${selectedEventRecordId}`)
+            .then(response => {
+                setEventRecordData(prevData => prevData.filter(record => record.id !== selectedEventRecordId));
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+        onClose();
+    };
+
+    const handleInputChange = (newValue) => {
+        setSelectedEventRecordId(newValue);
+    };
+
+    return (
+        <Dialog onClose={onClose} open={open}>
+            <DialogContent>
+                <Grid container spacing={2}>
+                    <Grid item>
+                        <Autocomplete
+                            required
+                            id="event-record-select"
+                            options={eventRecordIds}
+                            value={selectedEventRecordId}
+                            onChange={(event, newValue) => handleInputChange(newValue)}
+                            style={{ width: 300 }}
+                            renderInput={(params) => <TextField {...params} label="Event Record IDs" variant="outlined" />}
+                        />
+                    </Grid>
+                </Grid>
+            </DialogContent>
+            <DialogActions>
+                <Button variant="outlined" onClick={handleClose}>
+                    Remove Event Record
+                </Button>
+            </DialogActions>
+        </Dialog>
+    );
+}
+
+RemoveEventRecordPopup.propTypes = {
+    onClose: PropTypes.func.isRequired,
+    open: PropTypes.bool.isRequired,
+    setEventRecordData: PropTypes.func.isRequired,
+    eventRecordIds: PropTypes.array.isRequired,
+};
+
 function AddCompetitionPopup(props) {
     const {open, onClose, setCompetitionData, setCompetitionNames} = props;
 
@@ -262,11 +314,14 @@ export default function CoachPage(props) {
     const [RemoveCompetitionPopupOpen, setRemoveCompetitionPopupOpen] = useState(false);
 
     const [AddEventRecordPopupOpen, setAddEventPopupOpen] = useState(false);
+    const [RemoveEventRecordPopupOpen, setRemoveEventRecordPopupOpen] = useState(false);
 
     const [eventRecordData, setEventRecordData] = useState([]);
+    const [eventRecordIds, setEventRecordIds] = useState([]);
     const [competitionData, setCompetitionData] = useState([]);
     const [competitionNames, setCompetitionNames] = useState([]);
 
+    //add event record
     const handleAddEventClickOpen = () => {
         setAddEventPopupOpen(true);
     };
@@ -275,6 +330,16 @@ export default function CoachPage(props) {
         setAddEventPopupOpen(false);
     };
 
+    //remove event record
+    const handleRemoveEventClickOpen = () => {
+        setRemoveEventRecordPopupOpen(true);
+    };
+    
+    const handleRemoveEventClickClose = () => {
+        setRemoveEventRecordPopupOpen(false);
+    };
+
+    //add comp
     const handleAddCompetitionClickOpen = () => {
         setAddCompetitionPopupOpen(true);
     };
@@ -283,6 +348,7 @@ export default function CoachPage(props) {
         setAddCompetitionPopupOpen(false);
     };
 
+    //remove comp
     const handleRemoveCompetitionClickOpen = () => {
         setRemoveCompetitionPopupOpen(true);
     };
@@ -351,6 +417,7 @@ export default function CoachPage(props) {
                         <Table size="small">
                             <TableHead>
                                 <TableRow>
+                                    <TableCell>Event Record ID</TableCell>
                                     <TableCell>Swimmer Email</TableCell>
                                     <TableCell>Time</TableCell>
                                     <TableCell>Distance</TableCell>
@@ -362,6 +429,7 @@ export default function CoachPage(props) {
                             <TableBody>
                             {eventRecordData.map((event_record) => (
                                     <TableRow key={event_record.id}>
+                                        <TableCell>{event_record.id}</TableCell>
                                         <TableCell>{event_record.swimmer}</TableCell>
                                         <TableCell>{event_record.final_time_seconds}</TableCell>
                                         <TableCell>{event_record.distance}</TableCell>
@@ -373,12 +441,18 @@ export default function CoachPage(props) {
                             </TableBody>
                         </Table>
                         <Box display="flex" justifyContent="flex-end">
-                            <Button variant="outlined" onClick={handleAddEventClickOpen}>Add Event</Button>
+                            <Button variant="outlined" onClick={handleAddEventClickOpen}>Add Event Record</Button>
+                            <Button variant="outlined" onClick={handleRemoveEventClickOpen}>Remove Event Record</Button>
+                        </Box>
                             <AddEventRecordPopup 
                                 open={AddEventRecordPopupOpen} 
                                 onClose={handleAddEventClickClose} 
                                 setEventRecordData={setEventRecordData} />
-                        </Box>
+                            <RemoveEventRecordPopup
+                                open={RemoveEventRecordPopupOpen}
+                                onClose={handleRemoveEventClickClose}
+                                setEventRecordData={setEventRecordData}
+                                eventRecordIds={eventRecordData.map(record => record.id)}/>     
                     </Paper>
                 </Grid>
                 <Grid item xs={6}>
