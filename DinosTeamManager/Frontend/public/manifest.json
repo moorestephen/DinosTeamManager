@@ -1,0 +1,9 @@
+{
+  "short_name": "Dinos Swimming",
+  "name": "University of Calgary Dinos Swimming Team Management App",
+  "icons": [],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#000000",
+  "background_color": "#ffffff"
+}

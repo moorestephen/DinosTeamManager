@@ -1,8 +1,12 @@
-POST http://127.0.0.1:8000/login/
+POST http://127.0.0.1:3000/
 Content-Type: application/json
+Access-Control-Allow-Origin: true
+Access-Control-Allow-Methods: true
+Access-Control-Allow-Headers: true
+
 
 {
-    "username": "stephen",
+    "username": "stephenkm",
     "password": "password"
 }
 
@@ -22,5 +26,12 @@ Content-Type: application/json
 GET http://127.0.0.1:8000/test-token/
 Content-Type: application/json
 Authorization: Token 928df7a7ff922c74e494c7f95c48b18b61ff6e7f
+
+{}
+
+###
+
+GET http://127.0.0.1:8000/clubs/
+Content-Type: application/json
 
 {}
