@@ -121,7 +121,7 @@ AddEventRecordPopup.propTypes = {
     open: PropTypes.bool.isRequired,
 };
 
-export default function CoachPage(props) {
+export default function SwimmerPage(props) {
     const [userData, setUserData] = useState([{}]);
 
     const [AddEventRecordPopupOpen, setAddEventPopupOpen] = useState(false);
