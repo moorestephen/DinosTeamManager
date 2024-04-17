@@ -20,8 +20,6 @@ class LoginView(APIView):
         user = authenticate(username=username, password=password)
         if user is not None:
             login(request, user)
-            print(request.user.is_authenticated)
-            print(request.user.email)
             return Response(status=status.HTTP_200_OK, headers={'Access-Control-Allow-Credentials': 'true'})
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST, headers={'Access-Control-Allow-Credentials': 'true'})
@@ -52,8 +50,8 @@ class UserListCreate(generics.ListCreateAPIView):
             user = User.objects.get(username=self.request.data['username'])
             user.set_password(self.request.data['password'])
             user.save()
-            return Response({'user': serializer.data})
-        return Response(serializer.errors)
+            return Response({'user': user.data})
+        return Response({"error":"Invalid request. Please try again"}, status=status.HTTP_400_BAD_REQUEST)
 
 class UserDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = User.objects.all()

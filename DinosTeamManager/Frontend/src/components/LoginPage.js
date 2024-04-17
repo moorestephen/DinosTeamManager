@@ -2,7 +2,7 @@ import React, { useEffect }from  'react';
 import axios from 'axios';
 import { useNavigate, Navigate } from 'react-router-dom';
 import { Button, Grid, TextField, Box, Typography, createTheme, ThemeProvider, Link,
-         Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material'
+         Dialog, DialogTitle, DialogContent, DialogActions, Alert, Stack } from '@mui/material'
 
 import DisplayAppBar from './DisplayAppBar';
 
@@ -23,7 +23,6 @@ function AddAdminPopup(props) {
         const firstName = document.getElementById('FirstNameField').value;
         const lastName = document.getElementById('LastNameField').value;
         const tenureStart = document.getElementById('TenureStartField').value;
-        const contractStart = document.getElementById('ContractStartField').value;
 
         axios.post('http://localhost:8000/create-user/', {
             email: email,
@@ -40,6 +39,9 @@ function AddAdminPopup(props) {
                 user: response.data.id,
                 club_name: "Dinos"
             })
+        })
+        .catch(error => {
+            console.log(error);
         })
         onClose();
     };
@@ -64,9 +66,6 @@ function AddAdminPopup(props) {
                     <Grid item>
                         <TextField required type="date" label="Tenure Start" variant="outlined" id="TenureStartField" InputLabelProps={{shrink: true}}/>
                     </Grid>
-                    <Grid item>
-                        <TextField required type="date" label="Contract Start" variant="outlined" id="ContractStartField" InputLabelProps={{shrink: true}}/>
-                    </Grid>
                 </Grid>
             </DialogContent>
             <DialogActions>
@@ -75,7 +74,6 @@ function AddAdminPopup(props) {
                 </Button>
             </DialogActions>
         </Dialog>
-    
     )
 }
 
