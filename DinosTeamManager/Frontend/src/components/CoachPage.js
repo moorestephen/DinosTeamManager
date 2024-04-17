@@ -14,14 +14,14 @@ import { Paper, Grid, Typography, Table, TableBody, TableCell, TableHead, TableR
 
 
 function AddEventRecordPopup(props) {
-    const { open, onClose, setEventRecordData } = props;
-    const [competitionData, setCompetitionData] = useState([]);
+    const { open, onClose, setEventRecordData, competitionNames, setCompetitionNames, setCompetitionData } = props;
     const [swimmer, setSwimmer] = useState([]);
     const [currentTime, setCurrentTime] = useState(new Date().toISOString().substr(11, 8));
 
     useEffect(() => {
-        axios.get('http://localhost:8000/competitions/')
+        axios.get('http://localhost:8000/competitions/')  
             .then(response => {
+                setCompetitionNames(response.data.map(competition => competition.name));
                 setCompetitionData(response.data);
             })
             .catch((error) => {
@@ -111,8 +111,7 @@ function AddEventRecordPopup(props) {
                         <Autocomplete
                             required
                             id="competition-select"
-                            options={competitionData}
-                            getOptionLabel={(option) => option.name}
+                            options={competitionNames}
                             style={{ width: 300 }}
                             renderInput={(params) => <TextField {...params} label="Competition" variant="outlined" />}
                         />
@@ -459,7 +458,10 @@ export default function CoachPage(props) {
                             <AddEventRecordPopup 
                                 open={AddEventRecordPopupOpen} 
                                 onClose={handleAddEventClickClose} 
-                                setEventRecordData={setEventRecordData} />
+                                setEventRecordData={setEventRecordData}
+                                competitionNames={competitionNames}
+                                setCompetitionNames={setCompetitionNames}
+                                setCompetitionData={setCompetitionData} />
                             <RemoveEventRecordPopup
                                 open={RemoveEventRecordPopupOpen}
                                 onClose={handleRemoveEventClickClose}
