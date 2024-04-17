@@ -50,7 +50,7 @@ class UserListCreate(generics.ListCreateAPIView):
             user = User.objects.get(username=self.request.data['username'])
             user.set_password(self.request.data['password'])
             user.save()
-            return Response({'user': user.data})
+            return Response({'user': user})
         return Response({"error":"Invalid request. Please try again"}, status=status.HTTP_400_BAD_REQUEST)
 
 class UserDetail(generics.RetrieveUpdateDestroyAPIView):

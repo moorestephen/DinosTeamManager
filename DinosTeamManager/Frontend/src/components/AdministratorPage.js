@@ -184,6 +184,88 @@ function AddCoachPopup(props) {
     )
 }
 
+AddGroupCoachPopup.propTypes = {
+    onClose: PropTypes.func.isRequired,
+    open: PropTypes.bool.isRequired,
+};
+
+function AddGroupCoachPopup(props) {
+    const {open, onClose} = props;
+    const [ groups, setGroups ] = useState([]);
+    const [ coaches, setCoaches ] = useState([]);
+
+    useEffect(() => {
+        axios.get('http://localhost:8000/group-names/')
+        .then(response => {
+            setGroups(response.data);
+        })
+        .catch((error) => {
+            console.log(error);
+        });
+        }, []);
+
+    useEffect(() => {
+        axios.get('http://localhost:8000/coaches/')
+        .then(response => {
+            setCoaches(response.data);
+        })
+        .catch((error) => {
+            console.log(error);
+        });
+        }, []);
+
+    const handleClose = () => {
+        const coachEmail = document.getElementById('coach-select').value;
+        const group = document.getElementById('group-select').value;
+
+        axios.post('http://localhost:8000/group-coaches/', {
+            coach : coachEmail,
+            group : group
+        })
+        .then(response => {
+        })
+        onClose();
+    };
+
+    return (
+        <Dialog onClose={handleClose} open={open}>
+            <DialogContent >
+            <DialogContentText variant="h6" style={{ marginBottom: '20px' }}>Deisgnate Coach</DialogContentText>
+                <Grid container spacing={2}>
+                    <Grid item>
+                        <Autocomplete
+                            required
+                            id="group-select"
+                            options={groups}
+                            getOptionLabel={(option) => option.name}
+                            style={{ width: 300 }}
+                            renderInput={(params) => <TextField {...params} label="Group" variant="outlined" />}
+                        />
+                    </Grid>
+                    <Grid item>
+                        <Autocomplete
+                            required
+                            id="coach-select"
+                            options={coaches}
+                            getOptionLabel={(option) => option.email}
+                            style={{ width: 300 }}
+                            renderInput={(params) => <TextField {...params} label="Coach" variant="outlined" />}
+                        />
+                    </Grid>
+                </Grid>
+            </DialogContent>
+            <DialogActions>
+                <Button variant="outlined" onClick={handleClose} >
+                    Assign Group Coach
+                </Button>
+            </DialogActions>
+        </Dialog>
+    
+    )
+}
+
+
+
 function AddCompetitionPopup(props) {
     const {open, onClose, setCompetitionData, setCompetitionNames} = props;
 
@@ -330,6 +412,7 @@ export default function AdministratorPage(props) {
 
     const [addSwimmerPopupOpen, setAddSwimmerPopupOpen] = useState(false);
     const [addCoachPopupOpen, setAddCoachPopupOpen] = useState(false);
+    const [addGroupCoachPopupOpen, setAddGroupCoachPopupOpen] = useState(false);
 
     const [AddCompetitionPopupOpen, setAddCompetitionPopupOpen] = useState(false);
     const [RemoveCompetitionPopupOpen, setRemoveCompetitionPopupOpen] = useState(false);
@@ -352,6 +435,15 @@ export default function AdministratorPage(props) {
 
     const handleAddCoachClose = () => {
         setAddCoachPopupOpen(false);
+    };
+
+    // add group coach
+    const handleAddGroupCoachClickOpen = () => {
+        setAddGroupCoachPopupOpen(true);
+    };
+
+    const handleAddGroupCoachClose = () => {
+        setAddGroupCoachPopupOpen(false);
     };
 
     //add competition
@@ -525,6 +617,10 @@ export default function AdministratorPage(props) {
                                 ))}
                             </TableBody>
                         </Table>
+                        <Box display="flex" justifyContent="flex-end">
+                            <Button variant="outlined" onClick={handleAddGroupCoachClickOpen}>Designate Coach</Button>
+                            <AddGroupCoachPopup open={addGroupCoachPopupOpen} onClose={handleAddGroupCoachClose} />
+                        </Box>
                     </Paper>
                 </Grid>
                 <Grid item xs={6}>
