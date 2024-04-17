@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useNavigate, Navigate } from 'react-router-dom';
 import { Button, Grid, TextField, Box, Typography, createTheme, ThemeProvider, Link,
          Dialog, DialogTitle, DialogContent, DialogActions, Alert, Stack } from '@mui/material'
+         Dialog, DialogTitle, DialogContent, DialogActions, DialogContentText } from '@mui/material'
 
 import DisplayAppBar from './DisplayAppBar';
 
@@ -48,8 +49,8 @@ function AddAdminPopup(props) {
 
     return (
         <Dialog onClose={handleClose} open={open}>
-            <DialogTitle>Add Administrator</DialogTitle>
             <DialogContent >
+            <DialogContentText variant="h6" style={{ marginBottom: '20px' }}>Add Administrator</DialogContentText>
                 <Grid container spacing={2}>
                     <Grid item>
                         <TextField required label="Email" variant="outlined" id="EmailField" InputLabelProps={{shrink: true}}/>

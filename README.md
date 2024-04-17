@@ -10,20 +10,6 @@ cd DinosTeamManager/Frontend
 npm start
 
 # Login
-ADMIN:
-    username: 
-    password: password
-
-SWIMMERS:
-    username: juliem_04@icloud.com
-    password: password
-
-    username: stephenkm@icloud.com
-    passsword: password
-
-COACHES:
-    username: raybetuzzi@ucalgary.ca
-    password: password
-
-    username: mike.blondal@ucalgary.ca
-    password: password
+create an administrator user and login. From there you can create coach
+and swimmer users (their default password will be 'password'). You can
+then test out the functionalities of all user types.
