@@ -27,5 +27,3 @@ COACHES:
 
     username: mike.blondal@ucalgary.ca
     password: password
-
-To logout, clear browsing data and relaunch the frontend server
