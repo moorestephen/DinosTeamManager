@@ -65,7 +65,7 @@ function AddEventRecordPopup(props) {
     return (
         <Dialog onClose={handleClose} open={open}>
             <DialogContent>
-                <DialogContentText variant="h6" style={{ marginBottom: '20px' }}>Add Competition</DialogContentText>
+                <DialogContentText variant="h6" style={{ marginBottom: '20px' }}>Add Event Record</DialogContentText>
                 <Grid container spacing={2}>
                     <Grid item>
                         <TextField required id="final_time_seconds" type='number' label="Final Time (Seconds)" variant="outlined" InputLabelProps={{ shrink: true }} />
