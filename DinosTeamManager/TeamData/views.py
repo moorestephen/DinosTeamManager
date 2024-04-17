@@ -72,7 +72,7 @@ class UserInfo(APIView):
                 data['role'] = 'Coach'
             elif Admin.objects.filter(email=request.user.email).exists():
                 data['email'] = user.email
-                data['role'] = 'Admin'
+                data['role'] = 'Administrator'
             else:
                 return Response({'error': 'User not linked to any role'}, headers={'Access-Control-Allow-Credentials': 'true'})
             return Response(data, headers={'Access-Control-Allow-Credentials': 'true'})
