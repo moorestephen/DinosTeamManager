@@ -10,14 +10,14 @@ import UserInformation from "./UserInformation.js";
 
 import { Paper, Grid, Typography, Table, TableBody, TableCell, TableHead, TableRow,
          Button, Box, Dialog, DialogContent, TextField, DialogTitle, DialogActions,
-         FormControlLabel, Checkbox} from '@mui/material';
+         FormControlLabel, Checkbox, DialogContentText} from '@mui/material';
 
 
 function AddEventRecordPopup(props) {
-    const {open, onClose, setEventRecordData} = props;
-    const [competitionData, setCompetitionData ] = useState([]);
-    const [swimmer, setSwimmer ] = useState([]);
-
+    const { open, onClose, setEventRecordData } = props;
+    const [competitionData, setCompetitionData] = useState([]);
+    const [swimmer, setSwimmer] = useState([]);
+    const [currentTime, setCurrentTime] = useState(new Date().toISOString().substr(11, 8));
 
     useEffect(() => {
         axios.get('http://localhost:8000/competitions/')
@@ -27,7 +27,7 @@ function AddEventRecordPopup(props) {
             .catch((error) => {
                 console.log(error);
             });
-        
+
         axios.get('http://localhost:8000/swimmers/')
             .then(response => {
                 setSwimmer(response.data);
@@ -35,13 +35,11 @@ function AddEventRecordPopup(props) {
             .catch((error) => {
                 console.log(error);
             });
-        },
+    }, []);
 
-        []);
- 
     const handleClose = () => {
         axios.post('http://localhost:8000/event_record/', {
-            entry_time: document.getElementById('entry_time').value,
+            entry_time: currentTime,
             final_time_seconds: document.getElementById('final_time_seconds').value,
             distance: document.getElementById('distance').value,
             stroke: document.getElementById('stroke').value,
@@ -49,43 +47,55 @@ function AddEventRecordPopup(props) {
             competition: document.getElementById('competition-select').value,
             swimmer: document.getElementById('swimmer-select').value,
         })
-        .then(response => {
-            axios.get('http://localhost:8000/event_record/')  
-                .then(response => {
-                    setEventRecordData(response.data);
-                })
-                .catch((error) => {
-                    console.log(error);
-                });
+            .then(response => {
+                axios.get('http://localhost:8000/event_record/')
+                    .then(response => {
+                        setEventRecordData(response.data);
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                    });
             })
             .catch((error) => {
                 console.log(error);
-            });            
+            });
         onClose();
     };
 
     return (
         <Dialog onClose={handleClose} open={open}>
-            <DialogTitle>Add Event Record</DialogTitle>
-            <DialogContent >
+            <DialogContent>
+                <DialogContentText variant="h6" style={{ marginBottom: '20px' }}>Add Competition</DialogContentText>
                 <Grid container spacing={2}>
-                <Grid item>
-                        <TextField required id="swimmer_name" label="Swimmer Name" variant="outlined" InputLabelProps={{shrink: true}}/>
+                    <Grid item>
+                        <TextField required id="final_time_seconds" type='number' label="Final Time (Seconds)" variant="outlined" InputLabelProps={{ shrink: true }} />
                     </Grid>
                     <Grid item>
-                        <TextField required id="entry_time" type='time' label="Entry Time" variant="outlined" InputLabelProps={{shrink: true}}/>
+                        <Autocomplete
+                            required
+                            id="distance"
+                            options={['25', '50', '100', '200', '400', '800', '1500']}
+                            style={{ width: 300 }}
+                            renderInput={(params) => <TextField {...params} label="Distance (m)" variant="outlined" />}
+                        />
                     </Grid>
                     <Grid item>
-                        <TextField required id="final_time_seconds" type='number' label="Final Time (Seconds)" variant="outlined" InputLabelProps={{shrink: true}}/>
+                        <Autocomplete
+                            required
+                            id="stroke"
+                            options={['Freestyle', 'Backstroke', 'Breaststroke', 'Butterfly']}
+                            style={{ width: 300 }}
+                            renderInput={(params) => <TextField {...params} label="Stroke" variant="outlined" />}
+                        />
                     </Grid>
                     <Grid item>
-                        <TextField required id="distance" type='number' label="Distance" variant="outlined" InputLabelProps={{shrink: true}}/>
-                    </Grid>
-                    <Grid item>
-                        <TextField required id="stroke" label="Stroke" variant="outlined" InputLabelProps={{shrink: true}}/>
-                    </Grid>
-                    <Grid item>
-                        <TextField required id="course" label="Course" variant="outlined" InputLabelProps={{shrink: true}}/>
+                        <Autocomplete
+                            required
+                            id="course"
+                            options={['Short Course', 'Long Course']}
+                            style={{ width: 300 }}
+                            renderInput={(params) => <TextField {...params} label="Course" variant="outlined" />}
+                        />
                     </Grid>
                     <Grid item>
                         <Autocomplete
@@ -94,7 +104,7 @@ function AddEventRecordPopup(props) {
                             options={swimmer}
                             getOptionLabel={(option) => option.email}
                             style={{ width: 300 }}
-                            renderInput={(params) => <TextField {...params} label="Swimmers" variant="outlined" />}
+                            renderInput={(params) => <TextField {...params} label="Swimmer" variant="outlined" />}
                         />
                     </Grid>
                     <Grid item>
@@ -104,10 +114,9 @@ function AddEventRecordPopup(props) {
                             options={competitionData}
                             getOptionLabel={(option) => option.name}
                             style={{ width: 300 }}
-                            renderInput={(params) => <TextField {...params} label="Competitions" variant="outlined" />}
+                            renderInput={(params) => <TextField {...params} label="Competition" variant="outlined" />}
                         />
                     </Grid>
-                   
                 </Grid>
             </DialogContent>
             <DialogActions>
@@ -116,13 +125,64 @@ function AddEventRecordPopup(props) {
                 </Button>
             </DialogActions>
         </Dialog>
-    
-    )
+    );
 }
 
 AddEventRecordPopup.propTypes = {
     onClose: PropTypes.func.isRequired,
     open: PropTypes.bool.isRequired,
+};
+
+function RemoveEventRecordPopup(props) {
+    const { open, onClose, setEventRecordData, eventRecordIds } = props;
+    const [selectedEventRecordId, setSelectedEventRecordId] = useState('');
+
+    const handleClose = () => {
+        axios.delete(`http://localhost:8000/event_record/${selectedEventRecordId}`)
+            .then(response => {
+                setEventRecordData(prevData => prevData.filter(record => record.id !== selectedEventRecordId));
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+        onClose();
+    };
+
+    const handleInputChange = (newValue) => {
+        setSelectedEventRecordId(newValue);
+    };
+
+    return (
+        <Dialog onClose={onClose} open={open}>
+            <DialogContent>
+                <Grid container spacing={2}>
+                    <Grid item>
+                        <Autocomplete
+                            required
+                            id="event-record-select"
+                            options={eventRecordIds}
+                            value={selectedEventRecordId}
+                            onChange={(event, newValue) => handleInputChange(newValue)}
+                            style={{ width: 300 }}
+                            renderInput={(params) => <TextField {...params} label="Event Record IDs" variant="outlined" />}
+                        />
+                    </Grid>
+                </Grid>
+            </DialogContent>
+            <DialogActions>
+                <Button variant="outlined" onClick={handleClose}>
+                    Remove Event Record
+                </Button>
+            </DialogActions>
+        </Dialog>
+    );
+}
+
+RemoveEventRecordPopup.propTypes = {
+    onClose: PropTypes.func.isRequired,
+    open: PropTypes.bool.isRequired,
+    setEventRecordData: PropTypes.func.isRequired,
+    eventRecordIds: PropTypes.array.isRequired,
 };
 
 function AddCompetitionPopup(props) {
@@ -153,28 +213,28 @@ function AddCompetitionPopup(props) {
 
     return (
         <Dialog onClose={handleClose} open={open}>
-            <DialogTitle>Add Competition</DialogTitle>
-            <DialogContent >
-                <Grid container spacing={2}>
-                <Grid item>
-                        <TextField required id="name" label="Name" variant="outlined" InputLabelProps={{shrink: true}}/>
+            <DialogContent>
+                <DialogContentText variant="h6" style={{ marginBottom: '20px' }}>Add Competition</DialogContentText>
+                <Grid container spacing = {2}>
+                    <Grid item xs = {6}>
+                        <TextField required id="name" label="Name" variant="outlined" InputLabelProps={{ shrink: true }} />
                     </Grid>
-                    <Grid item>
+                    <Grid item xs = {6}>
                         <FormControlLabel
-                            control = {<Checkbox required id = 'sanctioned' />}
-                            label = "Sanctioned"
+                            control={<Checkbox required id='sanctioned' />}
+                            label="Sanctioned"
                         />
                     </Grid>
-                    <Grid item xs = {6}>
-                        <TextField required id="start_date" type='date' label="Start Date" variant="outlined" InputLabelProps={{shrink: true}}/>
+                    <Grid item xs={6}>
+                        <TextField required id="start_date" type='date' label="Start Date" variant="outlined" InputLabelProps={{ shrink: true }} />
                     </Grid>
-                    <Grid item xs = {6}>
-                        <TextField required id="end_date" type='date' label="End Date" variant="outlined" InputLabelProps={{shrink: true}}/>
-                    </Grid>               
+                    <Grid item xs={6}>
+                        <TextField required id="end_date" type='date' label="End Date" variant="outlined" InputLabelProps={{ shrink: true }} />
+                    </Grid>
                 </Grid>
             </DialogContent>
             <DialogActions>
-                <Button variant="outlined" onClick={handleClose} >
+                <Button variant="outlined" onClick={handleClose}>
                     Add Competition
                 </Button>
             </DialogActions>
@@ -228,8 +288,8 @@ function RemoveCompetitionPopup(props) {
 
     return (
         <Dialog onClose={onClose} open={open}>
-            <DialogTitle>Remove Competition</DialogTitle>
             <DialogContent >
+            <DialogContentText variant="h6" style={{ marginBottom: '20px' }}>Remove Competition</DialogContentText>
                 <Grid container spacing={2}>
                     <Grid item>
                         <Autocomplete
@@ -266,11 +326,14 @@ export default function CoachPage(props) {
     const [RemoveCompetitionPopupOpen, setRemoveCompetitionPopupOpen] = useState(false);
 
     const [AddEventRecordPopupOpen, setAddEventPopupOpen] = useState(false);
+    const [RemoveEventRecordPopupOpen, setRemoveEventRecordPopupOpen] = useState(false);
 
     const [eventRecordData, setEventRecordData] = useState([]);
+    const [eventRecordIds, setEventRecordIds] = useState([]);
     const [competitionData, setCompetitionData] = useState([]);
     const [competitionNames, setCompetitionNames] = useState([]);
 
+    //add event record
     const handleAddEventClickOpen = () => {
         setAddEventPopupOpen(true);
     };
@@ -279,6 +342,16 @@ export default function CoachPage(props) {
         setAddEventPopupOpen(false);
     };
 
+    //remove event record
+    const handleRemoveEventClickOpen = () => {
+        setRemoveEventRecordPopupOpen(true);
+    };
+    
+    const handleRemoveEventClickClose = () => {
+        setRemoveEventRecordPopupOpen(false);
+    };
+
+    //add comp
     const handleAddCompetitionClickOpen = () => {
         setAddCompetitionPopupOpen(true);
     };
@@ -287,6 +360,7 @@ export default function CoachPage(props) {
         setAddCompetitionPopupOpen(false);
     };
 
+    //remove comp
     const handleRemoveCompetitionClickOpen = () => {
         setRemoveCompetitionPopupOpen(true);
     };
@@ -355,20 +429,19 @@ export default function CoachPage(props) {
                         <Table size="small">
                             <TableHead>
                                 <TableRow>
-                                
-                                <TableCell>Swimmer Email</TableCell>
+                                    <TableCell>Event Record ID</TableCell>
+                                    <TableCell>Swimmer Email</TableCell>
                                     <TableCell>Time</TableCell>
                                     <TableCell>Distance</TableCell>
                                     <TableCell>Stroke</TableCell>
                                     <TableCell>Course</TableCell>
                                     <TableCell>Competition</TableCell>
-                                    
                                 </TableRow>
                             </TableHead>
                             <TableBody>
                             {eventRecordData.map((event_record) => (
                                     <TableRow key={event_record.id}>
-                                       
+                                        <TableCell>{event_record.id}</TableCell>
                                         <TableCell>{event_record.swimmer}</TableCell>
                                         <TableCell>{event_record.final_time_seconds}</TableCell>
                                         <TableCell>{event_record.distance}</TableCell>
@@ -380,9 +453,18 @@ export default function CoachPage(props) {
                             </TableBody>
                         </Table>
                         <Box display="flex" justifyContent="flex-end">
-                            <Button variant="outlined" onClick={handleAddEventClickOpen}>Add Event</Button>
-                            <AddEventRecordPopup open={AddEventRecordPopupOpen} onClose={handleAddEventClickClose} setEventRecordData={setEventRecordData} />
+                            <Button variant="outlined" onClick={handleAddEventClickOpen}>Add Event Record</Button>
+                            <Button variant="outlined" onClick={handleRemoveEventClickOpen}>Remove Event Record</Button>
                         </Box>
+                            <AddEventRecordPopup 
+                                open={AddEventRecordPopupOpen} 
+                                onClose={handleAddEventClickClose} 
+                                setEventRecordData={setEventRecordData} />
+                            <RemoveEventRecordPopup
+                                open={RemoveEventRecordPopupOpen}
+                                onClose={handleRemoveEventClickClose}
+                                setEventRecordData={setEventRecordData}
+                                eventRecordIds={eventRecordData.map(record => record.id)}/>     
                     </Paper>
                 </Grid>
                 <Grid item xs={6}>

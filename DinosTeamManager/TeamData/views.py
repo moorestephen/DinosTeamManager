@@ -216,6 +216,15 @@ class EventRecordRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
     queryset = EventRecord.objects.all()
     serializer_class = EventRecordSerializer
 
+    def delete(self, request, *args, **kwargs):
+        id = kwargs.get('id')
+        event_record = self.queryset.filter(id = id).first()
+        if event_record:
+            event_record.delete()
+            return Response({'message': 'Event record deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+        else:
+            return Response({'error': 'Event record not found'}, status=status.HTTP_404_NOT_FOUND)
+
 class EventListCreate(generics.ListCreateAPIView):
     queryset = Event.objects.all()
     serializer_class = EventSerializer
