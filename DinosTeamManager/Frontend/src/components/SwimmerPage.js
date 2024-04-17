@@ -14,13 +14,12 @@ import { Paper, Grid, Typography, Table, TableBody, TableCell, TableHead, TableR
 
 
 function AddEventRecordPopup(props) {
-    const {open, onClose, setEventRecordData} = props;
+    const {open, onClose, setEventRecordData, userData} = props;
 
     const [competitionData, setCompetitionData ] = useState([]);
     const [swimmer, setSwimmer ] = useState([]);
 
     const [currentTime, setCurrentTime] = useState(new Date().toISOString().substr(11, 8));
-
 
     useEffect(() => {
         axios.get('http://localhost:8000/competitions/')
@@ -50,7 +49,7 @@ function AddEventRecordPopup(props) {
             stroke: document.getElementById('stroke').value,
             course: document.getElementById('course').value,
             competition: document.getElementById('competition-select').value,
-            swimmer: document.getElementById('swimmer-select').value,
+            swimmer: userData.email,
         })
         .then(response => {
             axios.get('http://localhost:8000/event_record/')  
@@ -102,16 +101,7 @@ function AddEventRecordPopup(props) {
                             renderInput={(params) => <TextField {...params} label="Course" variant="outlined" />}
                         />
                     </Grid>
-                    <Grid item>
-                        <Autocomplete
-                            required
-                            id="swimmer-select"
-                            options={swimmer}
-                            getOptionLabel={(option) => option.email}
-                            style={{ width: 300 }}
-                            renderInput={(params) => <TextField {...params} label="Swimmer" variant="outlined" />}
-                        />
-                    </Grid>
+
                     <Grid item>
                         <Autocomplete
                             required
@@ -224,7 +214,7 @@ export default function SwimmerPage(props) {
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                            {eventRecordData.map((event_record) => (
+                            {eventRecordData.filter(record => record.swimmer === userData.email).map((event_record) => (
                                     <TableRow key={event_record.id}>
                                         <TableCell>{event_record.swimmer}</TableCell>
                                         <TableCell>{event_record.final_time_seconds}</TableCell>
@@ -238,7 +228,7 @@ export default function SwimmerPage(props) {
                         </Table>
                         <Box display="flex" justifyContent="flex-end">
                             <Button variant="outlined" onClick={handleAddEventClickOpen}>Add Event</Button>
-                            <AddEventRecordPopup open={AddEventRecordPopupOpen} onClose={handleAddEventClickClose} setEventRecordData={setEventRecordData} />
+                            <AddEventRecordPopup open={AddEventRecordPopupOpen} onClose={handleAddEventClickClose} setEventRecordData={setEventRecordData} userData={userData} />
                         </Box>
                     </Paper>
                 </Grid>
