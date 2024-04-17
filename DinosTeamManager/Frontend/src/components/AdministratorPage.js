@@ -377,7 +377,6 @@ export default function AdministratorPage(props) {
     useEffect(() => {
 
         // Navigate back to login page if user not logged in
-        /*
         axios.get("http://localhost:8000/check-login-status/", {withCredentials: true})
         .then(response => {
             if (!response.data['is_authenticated']) {
@@ -410,7 +409,7 @@ export default function AdministratorPage(props) {
         })
         .catch((error) => {
             console.log(error);
-        });*/
+        });
 
         axios.get('http://localhost:8000/swimmers-and-group/')
         .then(response => {
